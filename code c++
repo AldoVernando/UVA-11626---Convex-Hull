@@ -1,0 +1,97 @@
+#include<stdio.h>
+#include<iostream>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+struct Point 
+{ 
+    long long x, y; 
+}; 
+
+vector<Point> points;
+  
+bool compare(Point a, Point b)
+{ 
+	if(a.x != b.x)
+    	return a.x < b.x; 
+    	
+    return a.y < b.y;
+}  
+  
+long long cross_product(Point O, Point A, Point B) 
+{ 
+    return (A.x - O.x) * (B.y - O.y) 
+           - (A.y - O.y) * (B.x - O.x); 
+} 
+
+vector<Point> convex_hull(vector<Point> A) 
+{ 
+    int n = points.size(), k = 0; 
+  
+    if (n <= 3) 
+        return A; 
+  
+    vector<Point> ans(2 * n); 
+  
+    // Build lower hull 
+    for (int i = 0; i < n; ++i) { 
+  
+        while (k >= 2 && cross_product(ans[k - 2],  
+                          ans[k - 1], A[i]) < 0) 
+            k--; 
+        ans[k++] = A[i]; 
+    } 
+  
+    // Build upper hull 
+    for (size_t i = n - 1, t = k + 1; i > 0; --i) { 
+  
+        while (k >= t && cross_product(ans[k - 2], 
+                           ans[k - 1], A[i - 1]) < 0) 
+            k--; 
+        ans[k++] = A[i - 1]; 
+    } 
+  
+    ans.resize(k - 1); 
+  
+    return ans; 
+} 
+
+int main(){
+	
+	int input;
+	
+	scanf("%d",&input);
+	
+	for(int i=0;i<input;i++){
+		int manyPoint;
+		points.clear();
+		
+		scanf("%d",&manyPoint);
+		
+		for(int j=0;j<manyPoint;j++){
+			long long x, y;
+			char h;
+			
+			scanf("%lld %lld %c",&x,&y,&h);
+			Point p;
+			p.x = x;
+			p.y = y;
+			
+			if(h == 'Y')
+				points.push_back(p);
+		}
+		sort(points.begin(), points.end(),compare);
+	
+    	vector<Point> ans = convex_hull(points); 
+  
+	  	printf("%d\n",ans.size());
+	  
+	    for (int i = 0; i < ans.size(); i++) 
+	        printf("%lld %lld\n",ans[i].x,ans[i].y);
+
+	}
+	
+	return 0;
+}
